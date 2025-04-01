@@ -2,7 +2,7 @@
 
 usage() {
     echo "  options:"
-    echo "      -n: select drone namespace to launch. Default is 'drone0'"
+    echo "      -n: select drone namespace to launch. Default is 'qav0'"
     echo "      -c: motion controller plugin (pid_speed_controller, differential_flatness_controller), choices: [pid, df]. Default: pid"
     echo "      -x: launch micro_xrce_agent for real flights. Default not launch"
     echo "      -r: record rosbag. Default not launch"
@@ -10,7 +10,7 @@ usage() {
 }
 
 # Initialize variables with default values
-drones_namespace="drone0"
+drones_namespace="${ROS2_DEVICE_NAMESPACE:-qav0}"
 motion_controller_plugin="pid"
 micro_xrce_agent="false"
 rosbag="false"
