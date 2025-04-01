@@ -53,6 +53,18 @@ MicroXRCEAgent serial -b 921600 --dev /dev/ttyUSB0
 MicroXRCEAgent udp4 -p 8888
 ```
 
+Create a file called `device_env.bash` which specifies drone specific environment variables
+
+```bash
+#!/bin/bash
+export ROS2_DEVICE_NAMESPACE=qav0
+```
+
+and add the sourcing of this file into your bashrc
+```
+echo 'source "$(pwd)"/device_env.bash' >> ~/.bashrc
+```
+
 To launch aerostack2 nodes for each drone, execute once the following command:
 
 ```bash
@@ -132,6 +144,58 @@ tmux kill-server
 ```
 
 If you are using gnome-terminal, you can end the execution by closing the terminal.
+
+## Docker
+
+### Cross-Platform build
+
+First you will need to setup a docker registry on your local machine 
+```
+
+```
+
+Then you can run the build script on localhost and initialised. This will install the relevant bits and automatically push to the local registry.
+
+> Note that it looks at `config/buildkitd.toml`
+
+```bash
+./docker_build_arm64_local.bash -r 127.0.0.1:5000 -i
+```
+
+### Running it on the drone (raspberry pi)
+
+Build MicroXRCEDDS-Agent container. You can clone github repository and you can use docker to build on the pi. Note I found that you may need the `--net=host` option. 
+```
+git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
+docker build -t micro-xrce-dds-agent Micro-XRCE-DDS-Agent/ --network=host
+```
+
+Create a file called `device_env.bash` which specifies drone specific environment variables
+
+```bash
+#!/bin/bash
+export ROS2_DEVICE_NAMESPACE=qav0
+```
+
+and add the sourcing of this file into your bashrc
+```bash
+echo 'source "$(pwd)"/device_env.bash' >> ~/.bashrc
+```
+
+Pull the latest version of this repo's container that you just cross-platform built, and run it:
+
+```bash
+docker run -it --rm --net=host -v "$(pwd)"/device_env.bash:/device_env.bash <registry ip>:5000/project_px4_vision:latest
+```
+
+> Note: You may need to add your registry ip to the list of insecure registries in `/etc/docker/daemon.json`
+> ```
+> {
+>    "insecure-registries": [
+>       "<local registry Ip address>:5000"
+>     ]
+> }
+> ```
 
 ## Developers guide
 
