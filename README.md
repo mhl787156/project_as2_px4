@@ -151,7 +151,7 @@ If you are using gnome-terminal, you can end the execution by closing the termin
 
 First you will need to setup a docker registry on your local machine 
 ```
-
+docker run -d -p 5000:5000 --name registry registry:2.7
 ```
 
 Then you can run the build script on localhost and initialised. This will install the relevant bits and automatically push to the local registry.
